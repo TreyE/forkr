@@ -1,6 +1,20 @@
 class Forkr
-  attr_reader :master_pid, :child_count, :children
+  
+  # The PID of the Forkr master
+  # @return [Fixnum]
+  attr_reader :master_pid
 
+  # The number of children I should maintain
+  # This can be adjusted up or down with the TTIN and TTOU signals.
+  # @return [Integer]
+  attr_reader :child_count
+ 
+  # Child process pids.
+  # @return [Array<Fixnum>]
+  attr_reader :children
+
+  # @param forklet [Object] the worker object
+  # @param num_kids [Integer] how many children to spawn 
   def initialize(forklet, num_kids = 1)
     @worker_client = forklet 
     @master_pid = $$
@@ -9,6 +23,8 @@ class Forkr
     @in_shutdown = false
   end
 
+  # Start the master, and spawn workers
+  # @return [nil]
   def run
     @inbound, @outbound = IO.pipe
     Signal.trap('CHLD') { dead_child }
