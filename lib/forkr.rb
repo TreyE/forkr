@@ -1,5 +1,5 @@
 class Forkr
-  attr_reader :master_pid, :children, :inbound, :outbound, :child_count
+  attr_reader :master_pid, :child_count, :children
 
   def initialize(forklet, num_kids = 1)
     @worker_client = forklet 
@@ -21,6 +21,8 @@ class Forkr
   end
 
   protected
+
+  attr_reader :inbound, :outbound
 
   def send_wake_notice(notice)
     return(nil) if $$ != master_pid
