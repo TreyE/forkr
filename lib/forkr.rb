@@ -20,6 +20,8 @@ class Forkr
     master_loop
   end
 
+  protected
+
   def send_wake_notice(notice)
     return(nil) if $$ != master_pid
     return(nil) if @in_shutdown
