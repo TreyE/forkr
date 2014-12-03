@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'forkr'
-  s.version     = '0.1.2'
-  s.date        = '2014-12-01'
+  s.version     = '0.1.3'
+  s.date        = '2014-12-03'
   s.summary     = "A pre-forking worker host - shamelessly inspired by unicorn."
   s.description = "A pre-forking worker host."
   s.authors     = ["Trey Evans"]
