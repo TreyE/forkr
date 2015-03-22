@@ -95,29 +95,31 @@ class Forkr
   end
 
   def master_loop
-    ensure_right_worker_count
-    loop do
-      fds = IO.select([@inbound],nil,nil,2)
-      unless fds.nil?
-        data_read = fds.first.first.read(1)
-        if data_read == "I"
-          shutdown_using(:INT)
-        elsif data_read == "T"
-          shutdown_using(:TERM)
-        elsif data_read == "Q"
-          shutdown_using(:QUIT)
-        elsif data_read == "+"
-          increment_workers
-        elsif data_read == "-"
-          decrement_workers
-        end
-      end
-      prune_workers
+    catch(:bail_because_im_a_worker) do
       ensure_right_worker_count
+      loop do
+        fds = IO.select([@inbound],nil,nil,2)
+        unless fds.nil?
+          data_read = fds.first.first.read(1)
+          if data_read == "I"
+            shutdown_using(:INT)
+          elsif data_read == "T"
+            shutdown_using(:TERM)
+          elsif data_read == "Q"
+            shutdown_using(:QUIT)
+          elsif data_read == "+"
+            increment_workers
+          elsif data_read == "-"
+            decrement_workers
+          end
+        end
+        prune_workers
+        ensure_right_worker_count
+      end
+      reap_all_workers
+      @outbound.close
+      @inbound.close
     end
-    reap_all_workers
-    @outbound.close
-    @inbound.close
   end
 
   def reap_all_workers
@@ -163,6 +165,7 @@ class Forkr
     @outbound.close
     $stderr.puts "Worker spawned as #{$$}!"
     @worker_client.run
+    throw(:bail_because_im_a_worker)
   end
 
   def child_dead?(pid)
