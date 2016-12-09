@@ -125,7 +125,7 @@ class MultiForkr
   end
 
   def signal_all_workers(sig)
-    @children.each { |c| signal_worker(c, sig) }
+    children.each { |c| signal_worker(c, sig) }
   end
 
   def signal_worker(wpid, signal)
