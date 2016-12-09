@@ -121,7 +121,7 @@ class MultiForkr
   end
 
   def children
-    @child_sets.values.map { |v| v }
+    @child_sets.values.flat_map { |v| v }
   end
 
   def signal_all_workers(sig)
